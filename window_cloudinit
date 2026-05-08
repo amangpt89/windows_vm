@@ -1,0 +1,38 @@
+[DEFAULT]
+username=Admin
+groups=Administrators
+inject_user_password=true
+first_logon_behaviour=no
+metadata_services=cloudbaseinit.metadata.services.configdrive.ConfigDriveService,cloudbas
+einit.metadata.services.httpservice.HttpService
+plugins=cloudbaseinit.plugins.common.mtu.MTUPlugin,
+cloudbaseinit.plugins.common.sethostname.SetHostNamePlugin,
+cloudbaseinit.plugins.windows.createuser.CreateUserPlugin,
+cloudbaseinit.plugins.common.setuserpassword.SetUserPasswordPlugin,
+cloudbaseinit.plugins.windows.extendvolumes.ExtendVolumesPlugin,
+cloudbaseinit.plugins.common.networkconfig.NetworkConfigPlugin,
+cloudbaseinit.plugins.common.sshpublickeys.SetUserSSHPublicKeysPlugin,
+cloudbaseinit.plugins.common.userdata.UserDataPlugin
+log_dir=C:\Program Files\Cloudbase Solutions\Cloudbase-Init\log\
+local_scripts_path=C:\Program Files\Cloudbase Solutions\Cloudbase-Init\LocalScripts\
+
+
+
+# Clear Windows temp files
+Remove-Item -Recurse -Force 'C:\Windows\Temp\*' -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force 'C:\Windows\SoftwareDistribution\Download\*' -
+ErrorAction SilentlyContinue
+# Clear event logs
+wevtutil el | ForEach-Object { wevtutil cl $_ }
+# Remove the Cloudbase-Init installer
+Remove-Item C:\cloudbaseinit.msi -ErrorAction SilentlyContinue
+# Ensure Cloudbase-Init service is set to Automatic
+Set-Service -Name cloudbase-init -StartupType Automatic
+Set-Service -Name cloudbase-init-unattend -StartupType Automatic
+
+
+# Enable RDP (recommended for cloud instances)
+Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server' \
+-Name fDenyTSConnections -Value 0
+netsh advfirewall firewall set rule group='remote desktop' new enable=Yes
+
