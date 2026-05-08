@@ -36,3 +36,8 @@ Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server' \
 -Name fDenyTSConnections -Value 0
 netsh advfirewall firewall set rule group='remote desktop' new enable=Yes
 
+
+Invoke-WebRequest -UseBasicParsing \
+https://cloudbase.it/downloads/CloudbaseInitSetup_Stable_x64.msi \
+-OutFile C:\cloudbaseinit.msi
+
